@@ -16,6 +16,7 @@ FILES = main.c \
 		parsefillit.c\
 		read.c\
 		solve.c\
+		eachpiece.c \
 		map.c
 
 OBJ = $(FILES:.c=.o)

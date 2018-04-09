@@ -1,4 +1,4 @@
- /* ************************************************************************** */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   solve.c                                            :+:      :+:    :+:   */
@@ -6,151 +6,98 @@
 /*   By: abchan <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/31 11:12:17 by abchan            #+#    #+#             */
-/*   Updated: 2018/04/03 14:49:32 by shomami          ###   ########.fr       */
+/*   Updated: 2018/04/05 15:03:05 by abchan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fillit.h"
 
-int		positioncalc(char *tetri, int mappos, int hashnbr, int mapcounter)
-{
-	//this function is to calculate the position of the hash in its own array and convert
-	// it to the index of the map array.
-	//it should return the position of the hash in the map
-	int piecepos;
-	int i;
-	
-	piecepos = -1;
-	i = 0;
-	while (i < hashnbr + 1)
-	{
-		piecepos++;
-		if (tetri[piecepos] == '#')
-			i++;
-	}
-	if (piecepos / 5 == 0) //this checks if the hash is on the top line of where its saved. If so, it's position on the map should be simply additive 
-		return (mappos + piecepos);
-	if (piecepos / 5 > 0)
-		return (mappos + ((mapcounter + 1) * (piecepos / 5)) + (piecepos % 5));
-	return (0);
+/*
+** placepiece places the piece
+*/
 
-}
-
-int		checkfit(char *tetri, char *map, int mappos, int mapcounter)
+char		*placepiece(int *piecepos, int piececount, char *map, int mappos)
 {
-	// this function checks to see if the piece fits here. it will maybe use position calc to
-	// see the piece's position on the map, and see if it's only '.'
-	int nbrchecked;
-	
-	nbrchecked = 0;
-	while (nbrchecked < 4)
+	if (map[piecepos[0] + mappos] == '.' &&
+		map[piecepos[1] + mappos] == '.' &&
+		map[piecepos[2] + mappos] == '.' &&
+		map[piecepos[3] + mappos] == '.')
 	{
-		if (map[positioncalc(tetri, mappos, nbrchecked, mapcounter)] != '.')
-			return (0);
-		nbrchecked++;
-	}
-	return (1);
-}
-
-char	*placepiece(char *tetri, int piececount, char *map, int mappos, int mapcounter)
-{
-	int	nbrplaced;
-	
-	nbrplaced = 0;
-	if (checkfit(tetri, map, mappos, mapcounter))
-	{
-		while (nbrplaced < 4)
-		{
-			map[positioncalc(tetri, mappos, nbrplaced, mapcounter)] = piececount + 'A';
-			nbrplaced++;
-		}
+		map[piecepos[0] + mappos] = 'A' + piececount;
+		map[piecepos[1] + mappos] = 'A' + piececount;
+		map[piecepos[2] + mappos] = 'A' + piececount;
+		map[piecepos[3] + mappos] = 'A' + piececount;
 		return (map);
 	}
 	return (0);
 }
 
-//This function gets the sqrt of the counted tetriminos * 4
-//maybe put this in map.c?
-int		ft_sqrt(int size)
-{
-	int num;
+/*
+** deletes the piece and returns the position of its top left corner
+** pos = pos - tetripos[lastpiece][0] gives that position
+*/
 
-	num = 2;
-	while (num * num < size)
-		num++;
-	return (num);
+size_t		clearlastpiece(int lastpiece, int **tetripos, char *map)
+{
+	size_t	pos;
+
+	pos = 0;
+	while (map[pos] != 'A' + lastpiece)
+		pos++;
+	pos = pos - tetripos[lastpiece][0];
+	map[tetripos[lastpiece][0] + pos] = '.';
+	map[tetripos[lastpiece][1] + pos] = '.';
+	map[tetripos[lastpiece][2] + pos] = '.';
+	map[tetripos[lastpiece][3] + pos] = '.';
+	return (pos);
 }
 
-// trying to the smallest possible size of the board and increase it
-//maybe put this in the map.c?
-int board_init(int tetrinbr)
+/*
+** recursion to solve
+*/
+
+int			solveit(char *map, int **tetripos, int tetrinbr, int currentpiece)
 {
-	int size;
+	size_t	mappos;
 
-	size = ft_sqrt(tetrinbr * 4);
-	return (size);
-}
-
-size_t		clearlastpiece(int lastpiece, char *map)
-{
-	size_t i;
-	size_t pos;
-
-	i = 0;
-	while (map[i] != 'A' + lastpiece)
-		i++;
-	pos = i;
-	while (map[i] != '\0')
+	mappos = 0;
+	if (currentpiece == tetrinbr)
+		return (1);
+	while (map[mappos] != '\0')
 	{
-		if (map[i] == 'A' + lastpiece)
-			map[i] = '.';
-		i++;
-	}
-	return (pos + 1);
-}
-
-
-char	*solveit(char *map, char **list, int mapcounter, int tetrinbr, int currentpiece, size_t mappos)
-{
-	//this is where we will be doing the recursive backtracking
-	while (currentpiece < tetrinbr && mappos < ft_strlen(map)) //thebacktrack thing should be placed somewhere inside of this loop or something
-	{
-		if (!(placepiece(list[currentpiece], currentpiece, map, mappos, mapcounter)))
-			mappos++;
-		else
+		if (placepiece(tetripos[currentpiece], currentpiece, map, mappos))
 		{
-			currentpiece++;
-			mappos = 0;
+			if (solveit(map, tetripos, tetrinbr, currentpiece + 1))
+				return (1);
+			clearlastpiece(currentpiece, tetripos, map);
 		}
+		mappos++;
 	}
-	if (currentpiece == 0 && mappos > strlen(map) - 4)
-		return (0);
-	if (map[mappos] == '\0' && currentpiece < tetrinbr)
-	{
-		if (currentpiece == 0 && !(solveit(map, list, mapcounter, tetrinbr, currentpiece, clearlastpiece(currentpiece - 1, map))))
-			return (0);
-		if (currentpiece > 0 && !(solveit(map, list, mapcounter, tetrinbr, currentpiece - 1, clearlastpiece(currentpiece - 1, map))))
-			return (0);
-	}
-	return (map);
+	return (0);
 }
 
+/*
+** central station for where the solve happens
+** if solve fails, the size of the map increments here
+*/
 
-
-int		solvecentral(char **list, int tetrinbr)
+int			solvecentral(char **list, int tetrinbr)
 {
-	size_t mapcounter;
-	char *map;
+	size_t	mapcounter;
+	char	*map;
+	int		**tetripos;
+
 	mapcounter = board_init(tetrinbr);
-	//squareroot thing for min square goes here
 	map = generate_map(mapcounter);
-	while (solveit(map, list, mapcounter, tetrinbr, 0, 0) == 0)
+	tetripos = convertit(list, mapcounter, tetrinbr);
+	while (solveit(map, tetripos, tetrinbr, 0) == 0)
 	{
 		free(map);
 		mapcounter++;
+		free(tetripos);
+		tetripos = convertit(list, mapcounter, tetrinbr);
 		map = generate_map(mapcounter);
 	}
-	//ft_putstr(map);
 	printmap(map);
 	return (0);
 }

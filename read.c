@@ -6,123 +6,48 @@
 /*   By: shomami <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/26 23:30:45 by shomami           #+#    #+#             */
-/*   Updated: 2018/04/02 21:05:46 by shomami          ###   ########.fr       */
+/*   Updated: 2018/04/06 11:08:37 by abchan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fillit.h"
 
-//read the connection to make sure the tetrimino is valid
 /*
-int valid_tetrimino(char *str)
-{
-	int i;
-
-	i = 0;
-	while (i < 20)
-	{
-		if (str[i] == '#')
-		{
-			if
-
-
-		}
-	}
-}
+** this function checks to make sure each piece is valid
 */
 
-/*
-int char_checker(char *input)
+int		isvalid(char *num)
 {
-	while (*input)
-	{
-		if(*input != '#' || *input != '.' || *input != '\n')
-			return(0);
-	input++;
-	}
-	return (1);
-}
-
-int input_checker(char *str)
-{
-	int i;
-
-	i = 0;
-	while (str[i])
-	{
-		if(i < 21)
-			return(1);
-		else
-		ft_putstr("ERROR\n");
-	}
-	i++;
+	if (ft_strcmp(num, "##..\n##..\n....\n....\n") == 0 ||
+			ft_strcmp(num, "####\n....\n....\n....\n") == 0 ||
+			ft_strcmp(num, "#...\n#...\n#...\n#...\n") == 0)
+		return (1);
+	else if (ft_strcmp(num, ".#..\n##..\n#...\n....\n") == 0 ||
+			ft_strcmp(num, ".##.\n##..\n....\n....\n") == 0 ||
+			ft_strcmp(num, "#...\n##..\n.#..\n....\n") == 0 ||
+			ft_strcmp(num, "##..\n.##.\n....\n....\n") == 0)
+		return (1);
+	else if (ft_strcmp(num, "#...\n##..\n#...\n....\n") == 0 ||
+			ft_strcmp(num, "###.\n.#..\n....\n....\n") == 0 ||
+			ft_strcmp(num, ".#..\n##..\n.#..\n....\n") == 0 ||
+			ft_strcmp(num, ".#..\n###.\n....\n....\n") == 0)
+		return (1);
+	else if (ft_strcmp(num, "##..\n#...\n#...\n....\n") == 0 ||
+			ft_strcmp(num, "###.\n..#.\n....\n....\n") == 0 ||
+			ft_strcmp(num, ".#..\n.#..\n##..\n....\n") == 0 ||
+			ft_strcmp(num, "#...\n###.\n....\n....\n") == 0)
+		return (1);
+	else if (ft_strcmp(num, "##..\n.#..\n.#..\n....\n") == 0 ||
+			ft_strcmp(num, "..#.\n###.\n....\n....\n") == 0 ||
+			ft_strcmp(num, "#...\n#...\n##..\n....\n") == 0 ||
+			ft_strcmp(num, "###.\n#...\n....\n....\n") == 0)
+		return (1);
 	return (0);
 }
 
-int connection_checker(char *str)
+int		countpieces(char **list)
 {
-	int con;
-	int i;
-
-	i = 0;
-	con = 0;
-	while (str[i])
-	{
-		while (i < 20)
-		{
-			if (i != 0)
-			{
-			if(i + 1 < 21 && str[i + 1] == '#')
-			con++;
-			if(i - 1 >= 0 && str[i - 1] == '#')
-			con++;
-			if((i + 5 < 21) && (str[i + 5] == '#'))
-			con++;
-			if((i - 5 >= 0) && (str[i - 5] == '#'))
-			con++;
-		}
-		i++;
-	}
-	return (1);
-	}
-	return (con == 6 || con == 8) ? (1) : (0);
-}
-*/
-
-//counting the #of tetriminos
-
-int                    isvalid(char *num)
-{
-    if (ft_strcmp(num, "##..\n##..\n....\n....\n") == 0 ||
-        ft_strcmp(num, "####\n....\n....\n....\n") == 0 ||
-        ft_strcmp(num, "#...\n#...\n#...\n#...\n") == 0)
-        return (1);
-    else if (ft_strcmp(num, ".#..\n##..\n#...\n....\n") == 0||
-        ft_strcmp(num, ".##.\n##..\n....\n....\n") == 0||
-        ft_strcmp(num, "#...\n##..\n.#..\n....\n") == 0||
-        ft_strcmp(num, "##..\n.##.\n....\n....\n") == 0)
-        return (1);
-    else if (ft_strcmp(num, "#...\n##..\n#...\n....\n") == 0||
-        ft_strcmp(num, "###.\n.#..\n....\n....\n") == 0||
-        ft_strcmp(num, ".#..\n##..\n.#..\n....\n") == 0||
-        ft_strcmp(num, ".#..\n###.\n....\n....\n") == 0)
-        return (1);
-    else if (ft_strcmp(num, "##..\n#...\n#...\n....\n") == 0||
-        ft_strcmp(num, "###.\n#...\n....\n....\n") == 0||
-        ft_strcmp(num, ".#..\n.#..\n##..\n....\n") == 0||
-        ft_strcmp(num, "#...\n###.\n....\n....\n") == 0)
-        return (1);
-	else if (ft_strcmp(num, "##..\n.#..\n.#..\n....\n") == 0||
-        ft_strcmp(num, "..#.\n###.\n....\n....\n") == 0||
-        ft_strcmp(num, "#...\n#...\n##..\n....\n") == 0||
-        ft_strcmp(num, "###.\n#...\n....\n....\n") == 0)
-        return (1);
-    return (0);
-}
-
-int countpieces(char **list)
-{
-	int i;
+	int		i;
 
 	i = 0;
 	while (list[i])
@@ -130,15 +55,73 @@ int countpieces(char **list)
 	return (i);
 }
 
-int count_tetriminos(char *filename)
+int		count_tetriminos(char *filename)
 {
 	int		fd;
 	char	buf[BUFF_SIZE + 1];
 	int		result;
+	int		nread;
 
 	fd = open(filename, O_RDONLY);
 	result = 0;
-	while (read(fd, buf, 21))
+	while ((nread = read(fd, buf, 21)) > 0)
 		result++;
+	if (nread < 0)
+		return (-1);
+	if (result > 26)
+		return (0);
 	return (result);
+}
+
+int		checkfilecharcount(char *filename)
+{
+	int		fd;
+	char	buf[546];
+	int		readit;
+	int		i;
+
+	fd = open(filename, O_RDONLY);
+	readit = 1 + read(fd, buf, 546);
+	if (readit % 21 != 0 || readit == 0)
+		return (0);
+	buf[readit] = '\0';
+	i = 0;
+	while (--readit >= 0)
+	{
+		if (buf[readit] == '#')
+			i++;
+		if (readit % 21 == 0 && i != 4)
+			return (0);
+		if (readit % 21 == 0 && i == 4)
+			i = 0;
+	}
+	return (1);
+}
+
+char	**readall(char *filename)
+{
+	int		file;
+	char	**list;
+	char	buf[BUFF_SIZE + 1];
+	int		i;
+	int		nread;
+
+	if (!checkfilecharcount(filename))
+		return (NULL);
+	list = (char **)malloc(sizeof(char *) * (count_tetriminos(filename) + 1));
+	file = open(filename, O_RDONLY);
+	i = 0;
+	while ((nread = read(file, buf, 21)) > 0)
+	{
+		if ((list[i++] = separate_tetriminos(buf)) == 0)
+		{
+			free(list);
+			return (0);
+		}
+	}
+	if (nread < 0)
+		return (NULL);
+	list[i] = 0;
+	close(file);
+	return (list);
 }
